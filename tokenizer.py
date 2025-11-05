@@ -1,49 +1,40 @@
-def read_process ( fraction , path="Friends_Transcript\Friends_Transcript.txt" , encoding_type="utf-8"):
-    with open("Friends_Transcript\Friends_Transcript.txt") as f: 
-        corpus=f.read(path)
-    usage=int(fraction*length(corpus))
-    return list(corpus[:usage].encode(encoding_type))
+import regex as re 
+from tokenizer_utils import read_process , count_pairs , merge , rectify , build_vocab
+class byte_pair_tokenizer():
+    def __init__(self,fraction,path , num_merges ):
+        self.corpus_idx , self.max_byte = read_process(fraction,path)
+        self.splitter=re.compile(r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""")
+        print("f'Creating {num_merges} merges , wait ...")
+        self.merges=merge(self.corpus_idx , num_merges)
+        self.vocab = build_vocab(self.merges,self.max_byte)
 
-def count_pairs(corpus_idx):
-    dict_pair={}
-    for i in range(len(corpus_idx)-1):
-        pair=(corpus_idx[i],corpus_idx[i+1])
-        dict_pair[pair]= dict_pair.get(pair,0)+1
-    return dict_pair
-def rectify(corpus_idx , new_merge , new_token_id):
-    i=0
-    while i < len(corpus_idx)-1:
-        pair=[corpus_idx[i],corpus_idx[i+1]]
-        
-        if pair==list(new_merge):
-            corpus_idx[i]=new_token_id
-            corpus_idx.pop(i+1)
-        i+=1
     
-def merge(corpus_idx, num_merges):
-    max_byte=max(corpus_idx)
-    merges={}
-    for it  in  range(1,num_merges):
-        pair_count=count_pairs(corpus_idx)
-        sorted_pairs=sorted(((v,k) for k,v in pair_count.items()),reverse=True)
-        new_merge=sorted_pairs[0][1]
-        merges[new_merge] = max_byte+it
-        rectify(corpus_idx , new_merge , max_byte+it)
+    def encode(self , sentence): 
+        
+        tokens = list(sentence.encode("utf-8"))
+        
+        merges = self.merges
+        
+        while True:
+            pairs=self.count_pairs(tokens) 
+            if not pairs:
+                break
+            pair_to_merge= min (pairs ,key=lambda x : merges.get(x , float("inf")) )
+            if pair_to_merge not in  merges:
+                break
+            id=merges[pair_to_merge]
+            rectify(tokens , pair_to_merge , id)
+        return tokens
+    
 
-    return merges
+    def decode(self,token_list ):
+        sentence=b"".join(self.vocab[id] for id in token_list )
+        sentence=sentence.decode("utf-8" , errors="replace")
+        return sentence
 
-
-def encode(merges , sentence):
-    # Step 1: convert text → bytes
-    tokens = list(sentence.encode("utf-8"))
-    merges = merge ()
-    while True:
-        pairs=count_pairs(tokens) 
-        if not pairs:
-            break
-        pair_to_merge= min (pairs ,key=lambda x : merges.get(x , float("inf")) )
-        if pair_to_merge not in  merges:
-            break
-        id=merges[pair_to_merge]
-        rectify_list(tokens , pair_to_merge , id)
-    return tokens
+    def encode_using_regex(self,sentence):
+        tokens=[]
+        for i in re.findall(self.splitter,sentence):
+            tokens+=self.encode(i)
+        return tokens
+    

@@ -21,6 +21,8 @@ class Head(nn.Module):
         key = self.key(x) # (B, T , head_size)
         query = self.query(x)  # (B, T , head_size)
         value = self.value(x)  # (B, T , head_size)
+        
+
         " We don't want past tokens to query future tokens "
         wei = query @ key.transpose(-2,-1) * key.shape[-1]**-0.5 # (B, T, hs) @ (B, hs, T) -> (B, T, T)
         wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf')) 
@@ -82,6 +84,7 @@ class model_predictor(nn.Module):
         T=idx.shape[-1]
         tok_emb = self.token_embedding_table(idx) # (B,T,C)
         pos_emb = self.positional_embedding(torch.arange(T, device=device)) # (T,C)
+        
         idx = tok_emb + pos_emb # (B,T,C)
         logits=self.final(self.transformer_layer(idx))
         if target is None:

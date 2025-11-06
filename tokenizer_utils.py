@@ -1,6 +1,6 @@
 def read_process ( fraction , path="Friends_Transcript\Friends_Transcript.txt" , encoding_type="utf-8"):
-        with open("Friends_Transcript\Friends_Transcript.txt") as f: 
-            corpus=f.read(path)
+        with open(path) as f: 
+            corpus=f.read()
         usage=int(fraction*len(corpus))
         corpus_idx =  list(corpus[:usage].encode(encoding_type))
         return  corpus_idx , max(corpus_idx)  
@@ -21,20 +21,23 @@ def rectify(corpus_idx , new_merge , new_token_id):
             corpus_idx.pop(i+1)
         i+=1
     
-def merge(self,corpus_idx, num_merges):
+def merge(corpus_idx, num_merges):
     max_byte=max(corpus_idx)
+    print(max_byte)
     merges={}
     for it  in  range(1,num_merges):
-        pair_count=self.count_pairs(corpus_idx)
+        pair_count=count_pairs(corpus_idx)
         sorted_pairs=sorted(((v,k) for k,v in pair_count.items()),reverse=True)
         new_merge=sorted_pairs[0][1]
+        
         merges[new_merge] = max_byte+it
-        self.rectify(corpus_idx , new_merge , max_byte+it)
+        print(f'{new_merge} has been added as token number : {max_byte+it}')
+        rectify(corpus_idx , new_merge , max_byte+it)
 
     return merges
 
 def build_vocab(merges , max_corpus_idx):
-        vocab={id:bytes([id]) for id in range(max_corpus_idx)}
+        vocab={id:bytes([id]) for id in range(max_corpus_idx+1)}
         for (p1,p2) , idx in merges.items():
             vocab[idx]=vocab[p1]+vocab[p2]
         return vocab

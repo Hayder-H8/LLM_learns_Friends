@@ -18,7 +18,7 @@ def loss_estimate(model,batch_generator,iter_times):
     print(f'The training loss is {loss_per_split["train"]}')
     return loss_per_split["val"]
     
-def train(model,batch_generator , iterations=50000 , eval_interval=100):
+def train(model,batch_generator ,save_path, iterations=50000 , eval_interval=100):
     optimizer=torch.optim.Adam(model.parameters() , lr=0.001)
     val_losses=[100]
     for epoch in range(iterations):
@@ -27,7 +27,7 @@ def train(model,batch_generator , iterations=50000 , eval_interval=100):
             val_loss=loss_estimate(model=model,batch_generator=batch_generator,iter_times=2)
             if val_loss<min(val_losses):
                 val_losses.append(val_loss)
-                torch.save(model.state_dict(),"llm_friends.pt")
+                torch.save(model.state_dict(),save_path)
         x,y = batch_generator.generate(split="train",batch_size=32)
         
         logits,loss=model(x,y)

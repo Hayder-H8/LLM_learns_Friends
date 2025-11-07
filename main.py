@@ -11,6 +11,8 @@ def main():
     # --- User related ---
     parser.add_argument("--train",action="store_true",help="Train from scratch instead of loading a checkpoint")
     parser.add_argument("--ckpt_save_path", type=str, default="llm_friends.pt", help="Path to checkpoint")
+    parser.add_argument("--predict", type=str, default=" ", help="first token to begin prediction")
+
 
     # --- Tokenizer-related arguments ---
     parser.add_argument("--num_merges", type=int, default=10, help="Number of BPE merges to perform")
@@ -88,7 +90,7 @@ def main():
         model.eval()
         print("performing the prediction")
         print(tokenizer.decode(model.predict(
-            idx= torch.tensor(tokenizer.encode("The one when Ben made a friend")).unsqueeze(0).to(device) 
+            idx= torch.tensor(tokenizer.encode(args.predict)).unsqueeze(0).to(device) 
             , num_predictions=2000)[0].tolist()))
 
 

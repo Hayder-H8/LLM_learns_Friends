@@ -8,7 +8,7 @@
 
 ---
 
-## 🧠 Project Overview
+##  Project Overview
 
 This project aims to demonstrate the end-to-end process of building a small Large Language Model (LLM) — from tokenization to training and text generation — using a lightweight transformer architecture.
 
@@ -27,7 +27,7 @@ The workflow is divided into several key modules:
 
 ---
 
-## ⚙️ Installation & Requirements
+##  Installation & Requirements
 
 You can run this project using Python ≥ 3.10.  
 It is recommended to use a dedicated conda or virtual environment.
@@ -40,19 +40,19 @@ conda activate llm-friends
 # Install dependencies
 pip install torch numpy regex
 
-## 🚀 Usage
+##  Usage
 
 The project is entirely configurable through command-line arguments.  
 All constants (context size, merges, layers, etc.) can be changed through `--args`.
 
-### 🏋️ Train or Resume Training
+###  Train or Resume Training
 
 To train the model from scratch or continue training from a checkpoint, run:
 
 ```bash
 python main.py --train --num_merges 10 --context_size 20 --nb_layers 6 --training_iterations 5000
 
-### 🤖 Run Inference (Prediction Mode)
+###  Run Inference (Prediction Mode)
 
 Once training is complete, you can load a checkpoint and generate text predictions directly.
 

@@ -74,7 +74,8 @@ def main():
             model=model,
             batch_generator=batch_gen,
             iterations=args.training_iterations,
-            eval_interval=args.eval_interval
+            eval_interval=args.eval_interval,
+            save_path= args.ckpt_save_path
         )
 
     else:

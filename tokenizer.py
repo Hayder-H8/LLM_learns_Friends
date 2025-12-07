@@ -24,7 +24,7 @@ class byte_pair_tokenizer:
             # Convert merge keys back from strings like "12,45" to tuples (12,45)
             self.merges = {tuple(map(int, k.split(","))): v for k, v in data["merges"].items()}
 
-            print(f"✅ Loaded vocab ({len(self.vocab)}) and merges ({len(self.merges)})")
+            print(f"Loaded vocab ({len(self.vocab)}) and merges ({len(self.merges)})")
 
         # Case 2: Build from scratch
         else:
@@ -33,13 +33,13 @@ class byte_pair_tokenizer:
                     "You must specify 'num_merges' if no existing tokenizer_path is provided."
                 )
 
-            print(f"⚙️ Building vocabulary from scratch ({num_merges} merges)...")
+            print(f" Building vocabulary from scratch ({num_merges} merges)...")
             self.merges = merge(corpus_idx=self.corpus_idx, num_merges=num_merges)
             self.vocab = build_vocab(self.merges, self.max_byte)
 
             # Optional save
             if tokenizer_path:
-                print(f"💾 Saving vocab and merges to {tokenizer_path}...")
+                print(f" Saving vocab and merges to {tokenizer_path}...")
                 # Convert bytes → latin1 strings, tuples → string keys
                 vocab_json = {k: v.decode("latin1") for k, v in self.vocab.items()}
                 merges_json = {f"{k[0]},{k[1]}": v for k, v in self.merges.items()}
@@ -51,7 +51,7 @@ class byte_pair_tokenizer:
                         ensure_ascii=False,
                         indent=2
                     )
-                print(f"✅ Saved tokenizer data to {tokenizer_path}")
+                print(f"Saved tokenizer data to {tokenizer_path}")
                 
                 
     
